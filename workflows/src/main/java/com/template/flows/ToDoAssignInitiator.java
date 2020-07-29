@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @StartableByRPC
 public class ToDoAssignInitiator extends FlowLogic<Void> {
     private final ProgressTracker progressTracker = new ProgressTracker();
-    private final UniqueIdentifier stateLinearId;
+    private final UniqueIdentifier todoID;
     private final Party assignedTo;
 
     @Override
@@ -36,8 +36,8 @@ public class ToDoAssignInitiator extends FlowLogic<Void> {
         return progressTracker;
     }
 
-    public ToDoAssignInitiator(UniqueIdentifier stateLinearId, Party assignedTo) {
-        this.stateLinearId = stateLinearId;
+    public ToDoAssignInitiator(UniqueIdentifier todoID, Party assignedTo) {
+        this.todoID = todoID;
         this.assignedTo = assignedTo;
     }
 
@@ -46,7 +46,7 @@ public class ToDoAssignInitiator extends FlowLogic<Void> {
     public Void call() throws FlowException {
         // 1. Retrieve the ToDoState from the vault using LinearStateQueryCriteria
         List<UUID> listOfLinearIds = new ArrayList<>();
-        listOfLinearIds.add(stateLinearId.getId());
+        listOfLinearIds.add(todoID.getId());
         QueryCriteria queryCriteria = new QueryCriteria.LinearStateQueryCriteria(null, listOfLinearIds);
 
         // 2. Get a reference to the inputState data that we are going to settle.
@@ -77,17 +77,24 @@ public class ToDoAssignInitiator extends FlowLogic<Void> {
         tb.addCommand(command);
 
         // 6. Add input and output states to flow using the TransactionBuilder.
+        ToDoState newState = inputStateToTransfer.withNewAssignedTo(assignedTo);
+        System.out.println(newState);
         tb.addInputState(inputStateAndRefToTransfer);
-        tb.addOutputState(inputStateToTransfer.withNewAssignedTo(assignedTo), ToDoContract.ID);
+        tb.addOutputState(newState, ToDoContract.ID);
 
         // 7. Ensure that this flow is being executed by the current assignedTo.
         if (!inputStateToTransfer.getassignedTo().getOwningKey().equals(getOurIdentity().getOwningKey())) {
-            throw new IllegalArgumentException("This flow must be run by the current lender.");
+            throw new IllegalArgumentException("This flow must be run by the current assignedTo.");
+        }
+        else {
+            System.out.println("Correct assignedTo");
         }
 
         // 8. Verify and sign the transaction
         tb.verify(getServiceHub());
         SignedTransaction partiallySignedTransaction = getServiceHub().signInitialTransaction(tb);
+
+        System.out.println("Initiator signed transaction");
 
         // 9. Collect all of the required signatures from other Corda nodes using the CollectSignaturesFlow
         List<FlowSession> sessions = new ArrayList<>();
@@ -99,10 +106,12 @@ public class ToDoAssignInitiator extends FlowLogic<Void> {
             }
         }
         sessions.add(initiateFlow(assignedTo));
+        System.out.println ("Collecting signatures");
         SignedTransaction fullySignedTransaction = subFlow(new CollectSignaturesFlow(partiallySignedTransaction, sessions));
         /* 10. Return the output of the FinalityFlow which sends the transaction to the notary for verification
          *     and the causes it to be persisted to the vault of appropriate nodes.
          */
+        System.out.println("Finalizing transaction");
         subFlow(new FinalityFlow(fullySignedTransaction, sessions));
         return null;
     }

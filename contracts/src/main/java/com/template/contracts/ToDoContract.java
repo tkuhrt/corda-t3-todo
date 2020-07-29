@@ -17,7 +17,7 @@ import static net.corda.core.contracts.ContractsDSL.requireThat;
 // ************
 public class ToDoContract implements Contract {
     // This is used to identify our contract when building a transaction.
-    public static final String ID = "com.template.contracts.TemplateContract";
+    public static final String ID = "com.template.contracts.ToDoContract";
 
     // A transaction is valid if the verify() function of the contract of all the transaction's input and output states
     // does not throw an exception.
