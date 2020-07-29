@@ -71,6 +71,6 @@ public class ToDoState implements ContractState, LinearState {
 
     @Override
     public List<AbstractParty> getParticipants() {
-        return Arrays.asList(this.assignedBy, this.assignedTo);
+        return Arrays.asList();
     }
 }

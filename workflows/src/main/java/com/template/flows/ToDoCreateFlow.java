@@ -44,7 +44,7 @@ public class ToDoCreateFlow extends FlowLogic<Void> {
         Party notary = sh.getNetworkMapCache().getNotaryIdentities().get(0);
         TransactionBuilder tb = new TransactionBuilder(notary)
                 .addOutputState(newState)
-                .addCommand(new ToDoContract.Commands.CreateCommand(), newState.getParticipants().get(0).getOwningKey());
+                .addCommand(new ToDoContract.Commands.CreateCommand(), myIdentity.getOwningKey());
         SignedTransaction stx = sh.signInitialTransaction(tb);
         FlowSession assignedToSession = initiateFlow(myIdentity);
         subFlow(new FinalityFlow(stx, Arrays.asList(assignedToSession)));
