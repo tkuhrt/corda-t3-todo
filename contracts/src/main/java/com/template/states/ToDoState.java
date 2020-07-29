@@ -94,8 +94,6 @@ public class ToDoState implements ContractState, LinearState {
         sb.append(this.taskDescription);
         sb.append("\n");
         sb.append(this.dateOfCreation.toString());
-        sb.append("\n");
-        sb.append(this.deadlineDate.toString());
         return sb.toString();
     }
 
