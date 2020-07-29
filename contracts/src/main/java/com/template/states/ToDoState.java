@@ -22,6 +22,7 @@ public class ToDoState implements ContractState, LinearState {
     private Party assignedTo;
     private String taskDescription;
     private Date dateOfCreation;
+    private Date deadlineDate;
     private UniqueIdentifier id;
 
     @NotNull
@@ -46,14 +47,6 @@ public class ToDoState implements ContractState, LinearState {
         this.assignedBy = assignedBy;
     }
 
-    public Date getDateOfCreation() {
-        return dateOfCreation;
-    }
-
-    public void setDateOfCreation(Date dateOfCreation) {
-        this.dateOfCreation = dateOfCreation;
-    }
-
     public String getTaskDescription() {
         return taskDescription;
     }
@@ -62,12 +55,32 @@ public class ToDoState implements ContractState, LinearState {
         this.taskDescription = taskDescription;
     }
 
+    public Date getDateOfCreation() {
+        return dateOfCreation;
+    }
+
+    public void setDateOfCreation(Date dateOfCreation) {
+        this.dateOfCreation = dateOfCreation;
+    }
+
+    public Date getDeadlineDate() {
+        return deadlineDate;
+    }
+
+    public void setDeadlineDate(Date deadlineDate) {
+        this.deadlineDate = deadlineDate;
+    }
+
     public ToDoState(Party assignedBy, Party assignedTo, String taskDescription, Date dateOfCreation) {
         this.assignedBy = assignedBy;
         this.assignedTo = assignedTo;
         this.taskDescription = taskDescription;
         this.dateOfCreation = dateOfCreation;
         this.id = new UniqueIdentifier();
+    }
+
+    public ToDoState withNewAssignedTo(Party newAssignedTo) {
+        return new ToDoState(this.assignedBy, newAssignedTo, this.taskDescription, this.dateOfCreation);
     }
 
     public String toString() {
@@ -81,6 +94,8 @@ public class ToDoState implements ContractState, LinearState {
         sb.append(this.taskDescription);
         sb.append("\n");
         sb.append(this.dateOfCreation.toString());
+        sb.append("\n");
+        sb.append(this.deadlineDate.toString());
         return sb.toString();
     }
 
