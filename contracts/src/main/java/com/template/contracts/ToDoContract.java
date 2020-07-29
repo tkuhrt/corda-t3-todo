@@ -25,10 +25,11 @@ public class ToDoContract implements Contract {
 
         if (cmd.getValue() instanceof Commands.CreateCommand) {
             requireThat(require -> {
-                require.using("No input states expected", tx.getInputs().size() != 0);
+                require.using("No input states expected", tx.getInputs().isEmpty());
                 require.using("One output state expected", tx.getOutputs().size() == 1);
-                ToDoState todo = (ToDoState) tx.getOutputStates().get(0);
-                require.using("Description cannot be empty", todo.getTaskDescription().isEmpty());
+                require.using("Output state must be of type ToDoState", tx.outputsOfType(ToDoState.class).size() == 1);
+                final ToDoState todo = (ToDoState) tx.getOutput(0);
+                require.using("Description cannot be empty", todo.getTaskDescription() != null);
                 require.using("Description length must be < 40", todo.getTaskDescription().length() < 40);
                 return null;
             });
