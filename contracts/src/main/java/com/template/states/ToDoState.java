@@ -19,7 +19,7 @@ import java.util.List;
 @BelongsToContract(ToDoContract.class)
 public class ToDoState implements ContractState, LinearState {
     private Party assignedBy;
-    private Party foo;
+    private Party assignedTo;
     private String taskDescription;
     private Date dateOfCreation;
     private UniqueIdentifier id;
@@ -30,12 +30,12 @@ public class ToDoState implements ContractState, LinearState {
         return this.id;
     }
 
-    public Party getfoo() {
-        return this.getfoo();
+    public Party getassignedTo() {
+        return this.getassignedTo();
     }
 
-    public void setfoo(Party foo) {
-        this.foo = foo;
+    public void setassignedTo(Party assignedTo) {
+        this.assignedTo = assignedTo;
     }
 
     public Party getAssignedBy() {
@@ -62,9 +62,9 @@ public class ToDoState implements ContractState, LinearState {
         this.taskDescription = taskDescription;
     }
 
-    public ToDoState(Party assignedBy, Party foo, String taskDescription, Date dateOfCreation) {
+    public ToDoState(Party assignedBy, Party assignedTo, String taskDescription, Date dateOfCreation) {
         this.assignedBy = assignedBy;
-        this.foo = foo;
+        this.assignedTo = assignedTo;
         this.taskDescription = taskDescription;
         this.dateOfCreation = dateOfCreation;
         this.id = new UniqueIdentifier();
@@ -76,7 +76,7 @@ public class ToDoState implements ContractState, LinearState {
         sb.append("\n");
         sb.append(this.assignedBy.toString());
         sb.append("\n");
-        sb.append(this.foo.toString());
+        sb.append(this.assignedTo.toString());
         sb.append("\n");
         sb.append(this.taskDescription);
         sb.append("\n");
@@ -86,6 +86,6 @@ public class ToDoState implements ContractState, LinearState {
 
     @Override
     public List<AbstractParty> getParticipants() {
-        return Arrays.asList(this.foo, this.assignedBy);
+        return Arrays.asList(this.assignedTo, this.assignedBy);
     }
 }
