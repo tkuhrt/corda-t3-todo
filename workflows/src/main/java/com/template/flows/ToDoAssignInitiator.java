@@ -76,17 +76,12 @@ public class ToDoAssignInitiator extends FlowLogic<Void> {
 
         // 6. Add input and output states to flow using the TransactionBuilder.
         ToDoState newState = inputStateToTransfer.withNewassignedTo(assignedTo);
-        System.out.println(inputStateToTransfer);
-        System.out.println(newState);
         tb.addInputState(inputStateAndRefToTransfer);
         tb.addOutputState(newState, ToDoContract.ID);
 
-        System.out.println("Get our key");
-        PublicKey ourKey = getOurIdentity().getOwningKey();
-        System.out.println("Get input.assignedTo key");
-        PublicKey inputKey = inputStateToTransfer.getAssignedTo().getOwningKey();
         // 7. Ensure that this flow is being executed by the current assignedTo.
-        System.out.println("Checking assignedTo");
+        PublicKey ourKey = getOurIdentity().getOwningKey();
+        PublicKey inputKey = inputStateToTransfer.getAssignedTo().getOwningKey();
         if (!inputKey.equals(ourKey)) {
             throw new IllegalArgumentException("This flow must be run by the current assignedTo.");
         }
@@ -98,20 +93,17 @@ public class ToDoAssignInitiator extends FlowLogic<Void> {
         tb.verify(getServiceHub());
         SignedTransaction partiallySignedTransaction = getServiceHub().signInitialTransaction(tb);
 
-        System.out.println("Initiator signed transaction");
-
         // 9. Collect all of the required signatures from other Corda nodes using the CollectSignaturesFlow
         List<FlowSession> sessions = new ArrayList<>();
         if (!inputKey.equals(inputStateToTransfer.getAssignedBy().getOwningKey())) {
             sessions.add(initiateFlow(inputStateToTransfer.getAssignedBy()));
         }
         sessions.add(initiateFlow(assignedTo));
-        System.out.println ("Collecting signatures");
         SignedTransaction fullySignedTransaction = subFlow(new CollectSignaturesFlow(partiallySignedTransaction, sessions));
+
         /* 10. Return the output of the FinalityFlow which sends the transaction to the notary for verification
          *     and the causes it to be persisted to the vault of appropriate nodes.
          */
-        System.out.println("Finalizing transaction");
         subFlow(new FinalityFlow(fullySignedTransaction, sessions));
         return null;
     }
