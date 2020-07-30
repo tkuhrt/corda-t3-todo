@@ -44,13 +44,13 @@ public class ToDoContract implements Contract {
                 require.using("Output state must be of type ToDoState", tx.outputsOfType(ToDoState.class).size() == 1);
                 final ToDoState in = (ToDoState) tx.getInput(0);
                 final ToDoState out = (ToDoState) tx.getOutput(0);
-                final ToDoState checkNew = out.withNewAssignedTo(in.getassignedTo());
+                final ToDoState checkNew = out.withNewassignedTo(in.getAssignedTo());
                 require.using("Only the assignedTo can change",
                         (checkNew.getAssignedBy().equals(out.getAssignedBy()) &&
                          checkNew.getTaskDescription().equals(out.getTaskDescription()) &&
                          checkNew.getDateOfCreation().equals(out.getDateOfCreation())));
                 require.using("The assignedTo property must change in an assignment.",
-                        !out.getassignedTo().getOwningKey().equals(in.getassignedTo().getOwningKey()));
+                        !out.getAssignedTo().getOwningKey().equals(in.getAssignedTo().getOwningKey()));
                 require.using("All participants must be signers",
                         cmd.getSigners().containsAll(out.getParticipants().stream().map(AbstractParty::getOwningKey).collect(Collectors.toList())));
                 return null;

@@ -31,11 +31,11 @@ public class ToDoState implements ContractState, LinearState {
         return this.id;
     }
 
-    public Party getassignedTo() {
-        return this.getassignedTo();
+    public Party getAssignedTo() {
+        return assignedTo;
     }
 
-    public void setassignedTo(Party assignedTo) {
+    public void setAssignedTo(Party assignedTo) {
         this.assignedTo = assignedTo;
     }
 
@@ -71,16 +71,16 @@ public class ToDoState implements ContractState, LinearState {
         this.deadlineDate = deadlineDate;
     }
 
-    public ToDoState(Party assignedBy, Party assignedTo, String taskDescription, Date dateOfCreation) {
+    public ToDoState(UniqueIdentifier id, Party assignedBy, Party assignedTo, String taskDescription, Date dateOfCreation) {
+        this.id = id;
         this.assignedBy = assignedBy;
         this.assignedTo = assignedTo;
         this.taskDescription = taskDescription;
         this.dateOfCreation = dateOfCreation;
-        this.id = new UniqueIdentifier();
     }
 
-    public ToDoState withNewAssignedTo(Party newAssignedTo) {
-        return new ToDoState(this.assignedBy, newAssignedTo, this.taskDescription, this.dateOfCreation);
+    public ToDoState withNewassignedTo(Party newassignedTo) {
+        return new ToDoState(this.id, this.assignedBy, newassignedTo, this.taskDescription, this.dateOfCreation);
     }
 
     public String toString() {

@@ -50,6 +50,8 @@ public class ToDoAssignResponder extends FlowLogic<Void> {
 
         // Run the ReceiveFinalityFlow to finalize the transaction and persist it to the vault.
         subFlow(new ReceiveFinalityFlow(otherPartyFlow, txWeJustSignedId));
+
+        System.out.println(txWeJustSignedId);
         return null;
     }
 }

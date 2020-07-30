@@ -16,9 +16,7 @@ import net.corda.core.transactions.TransactionBuilder;
 import net.corda.core.utilities.ProgressTracker;
 
 import java.security.PublicKey;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 // ******************
@@ -77,13 +75,19 @@ public class ToDoAssignInitiator extends FlowLogic<Void> {
         tb.addCommand(command);
 
         // 6. Add input and output states to flow using the TransactionBuilder.
-        ToDoState newState = inputStateToTransfer.withNewAssignedTo(assignedTo);
+        ToDoState newState = inputStateToTransfer.withNewassignedTo(assignedTo);
+        System.out.println(inputStateToTransfer);
         System.out.println(newState);
         tb.addInputState(inputStateAndRefToTransfer);
         tb.addOutputState(newState, ToDoContract.ID);
 
+        System.out.println("Get our key");
+        PublicKey ourKey = getOurIdentity().getOwningKey();
+        System.out.println("Get input.assignedTo key");
+        PublicKey inputKey = inputStateToTransfer.getAssignedTo().getOwningKey();
         // 7. Ensure that this flow is being executed by the current assignedTo.
-        if (!inputStateToTransfer.getassignedTo().getOwningKey().equals(getOurIdentity().getOwningKey())) {
+        System.out.println("Checking assignedTo");
+        if (!inputKey.equals(ourKey)) {
             throw new IllegalArgumentException("This flow must be run by the current assignedTo.");
         }
         else {
@@ -98,12 +102,8 @@ public class ToDoAssignInitiator extends FlowLogic<Void> {
 
         // 9. Collect all of the required signatures from other Corda nodes using the CollectSignaturesFlow
         List<FlowSession> sessions = new ArrayList<>();
-
-        for (AbstractParty participant: inputStateToTransfer.getParticipants()) {
-            Party partyToInitiateFlow = (Party) participant;
-            if (!partyToInitiateFlow.getOwningKey().equals(getOurIdentity().getOwningKey())) {
-                sessions.add(initiateFlow(partyToInitiateFlow));
-            }
+        if (!inputKey.equals(inputStateToTransfer.getAssignedBy().getOwningKey())) {
+            sessions.add(initiateFlow(inputStateToTransfer.getAssignedBy()));
         }
         sessions.add(initiateFlow(assignedTo));
         System.out.println ("Collecting signatures");

@@ -3,6 +3,7 @@ package com.template.flows;
 import co.paralleluniverse.fibers.Suspendable;
 import com.template.contracts.ToDoContract;
 import com.template.states.ToDoState;
+import net.corda.core.contracts.UniqueIdentifier;
 import net.corda.core.flows.*;
 import net.corda.core.identity.Party;
 import net.corda.core.node.ServiceHub;
@@ -42,7 +43,7 @@ public class ToDoCreateFlow extends FlowLogic<Void> {
         ServiceHub sh = this.getServiceHub();
         Party myIdentity = getOurIdentity();
         Date now = new Date();
-        ToDoState newState = new ToDoState(myIdentity, myIdentity, this.taskDescription, now);
+        ToDoState newState = new ToDoState(new UniqueIdentifier(), myIdentity, myIdentity, this.taskDescription, now);
         System.out.println(newState.toString());
         Party notary = sh.getNetworkMapCache().getNotaryIdentities().get(0);
         TransactionBuilder tb = new TransactionBuilder(notary)
